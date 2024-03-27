@@ -20,6 +20,10 @@ async function getEditPet() {
   document.querySelector("#species").value = pet.species
   document.querySelector("#description").value = pet.description
 
+  if (pet.photo) {
+    document.querySelector("#photo-preview").innerHTML = `<img src="https://res.cloudinary.com/dmnrhyggp/image/upload/w_190,h_190,c_fill/${pet.photo}.jpg" />`
+  }
+
   document.querySelector("#edit-pet-form").classList.remove("form-is-loading")
   document.querySelector("#name").focus
 }
@@ -29,12 +33,24 @@ getEditPet()
 document.querySelector("#edit-pet-form").addEventListener("submit", async function (e) {
   e.preventDefault()
 
+  if (isFormLocked) {
+    return null
+  }
+
+  isFormLocked = true
+
   const pet = {
     id,
     name: document.querySelector("#name").value,
     birthYear: document.querySelector("#birthYear").value,
     species: document.querySelector("#species").value,
     description: document.querySelector("#description").value
+  }
+
+  if (cloudinaryReturnedObject) {
+    pet.public_id = cloudinaryReturnedObject.public_id
+    pet.version = cloudinaryReturnedObject.version
+    pet.signature = cloudinaryReturnedObject.signature
   }
 
   document.querySelector("#edit-pet-form").classList.add("form-is-loading")
